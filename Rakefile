@@ -19,6 +19,13 @@ end
 desc "Starts the game"
 task :start do
   require './lib/mech_rl'
-  MechRL::GameWindow.new.show
+  MechRL::GameWindow.instance.show
+end
+
+task :playground do
+  require './lib/mech_rl'
+  window = MechRL::GameWindow.instance
+  window.views.push MechRL::View::Test.new
+  window.show
 end
 

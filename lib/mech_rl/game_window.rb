@@ -1,6 +1,11 @@
+require 'singleton'
+
 module MechRL
   class GameWindow < Gosu::Window
+    include Singleton
     include Constants
+
+    attr_reader :views
 
     def initialize
       super Window::ScreenWidth,
@@ -8,24 +13,33 @@ module MechRL
             Window::Fullscreen
       self.caption = Window::ScreenCaption
 
+      @views = []
       @bg_color = Gosu::Color.new 0xFFc0c0c0
-      @font = Gosu::Font.new(self, "Consolas", 32)
     end
 
     def update
+      view.update unless view.nil?
     end
 
     def draw
+      draw_background
+
+      view.draw unless view.nil?
+    end
+
+    def view
+      views.first
+    end
+
+    private
+
+    def draw_background
       draw_quad(
         0                   , 0                    , @bg_color ,
         Window::ScreenWidth , 0                    , @bg_color ,
         0                   , Window::ScreenHeight , @bg_color ,
         Window::ScreenWidth , Window::ScreenHeight , @bg_color
       )
-      msg = "Hello World !"
-      offset_x = @font.text_width(msg)/2
-      offset_y = @font.height/2
-      @font.draw(msg, Window::ScreenWidth/2 - offset_x, Window::ScreenHeight/2 - offset_y, ZOrder::Text)
     end
   end
 end
