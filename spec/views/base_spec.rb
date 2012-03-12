@@ -1,7 +1,7 @@
-require_relative 'spec_helper'
+require_relative '../spec_helper'
 
 module MechRL
-  describe GameView do
+  describe View::Base do
 
     its(:window) { should == GameWindow.instance }
   end

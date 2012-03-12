@@ -25,7 +25,7 @@ end
 task :playground do
   require './lib/mech_rl'
   window = MechRL::GameWindow.instance
-  window.views.push MechRL::View::Test.new
+  window.views.push MechRL::View::Game.new
   window.show
 end
 

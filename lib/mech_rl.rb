@@ -4,4 +4,13 @@ require 'rubygems'
 require 'gosu'
 
 require 'mech_rl/constants'
+require 'mech_rl/game'
+require 'mech_rl/mech'
 require 'mech_rl/game_window'
+
+require 'mech_rl/views/base'
+require 'mech_rl/views/game'
+require 'mech_rl/views/test'
+
+require 'mech_rl/states/base'
+require 'mech_rl/states/game'

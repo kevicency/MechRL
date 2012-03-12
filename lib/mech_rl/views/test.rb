@@ -1,7 +1,7 @@
 
 module MechRL
   module View
-    class Test < GameView
+    class Test < Base
 
       def initialize
         @font = Gosu::Font.new(window, "Consolas", 32)

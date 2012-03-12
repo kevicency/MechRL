@@ -6,6 +6,7 @@ module MechRL
     include Constants
 
     attr_reader :views
+    attr_reader :game
 
     def initialize
       super Window::ScreenWidth,
@@ -18,27 +19,26 @@ module MechRL
     end
 
     def update
-      view.update unless view.nil?
+      if (@game.nil?)
+        @game = Game.new
+        @game.transition_to State::Game.new
+      end
+      @game.update update_interval/1000 unless game.nil?
     end
 
     def draw
       draw_background
 
-      view.draw unless view.nil?
+      @game.state.views.each &:draw
     end
-
-    def view
-      views.first
-    end
-
     private
 
     def draw_background
       draw_quad(
-        0                   , 0                    , @bg_color ,
-        Window::ScreenWidth , 0                    , @bg_color ,
-        0                   , Window::ScreenHeight , @bg_color ,
-        Window::ScreenWidth , Window::ScreenHeight , @bg_color
+      0                  , 0                   , @bg_color, 
+      Window::ScreenWidth, 0                   , @bg_color, 
+      0                  , Window::ScreenHeight, @bg_color, 
+      Window::ScreenWidth, Window::ScreenHeight, @bg_color
       )
     end
   end
