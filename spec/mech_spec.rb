@@ -15,40 +15,40 @@ module MechRL
       its(:target_velocity) { should == 0 }
     end
 
-    describe "#add_part" do
+    describe "#add_component" do
       before do
-        @it.add_part :foo do |foo|
+        @it.add_component :foo do |foo|
           @foo = foo
         end
       end
 
-      it "adds a getter for the part" do
+      it "adds a getter for the component" do
         @it.respond_to?(:foo).should be_true
       end
 
-      it "returns the part when getter is called" do
+      it "returns the component when getter is called" do
         @it.foo.should == @foo
       end
 
-      it "adds the part" do
+      it "adds the component" do
         puts "slots: #{@it.slots}"
         @it.has(:foo).should be_true
       end
 
-      it "creates a new MechPart when no specific part is given" do
-        @it.foo.should be_kind_of MechPart
+      it "creates a new Component when no specific component is given" do
+        @it.foo.should be_kind_of Mech::Component
       end
 
-      context "followed by #remove_part" do
+      context "followed by #remove_component" do
         before do
-          @it.remove_part :foo
+          @it.remove_component :foo
         end
 
         it "removes the getter" do
           @it.respond_to?(:foo).should be_false
         end
 
-        it "removes the part" do
+        it "removes the component" do
           @it.has(:foo).should be_false
         end
       end
@@ -100,12 +100,12 @@ module MechRL
     end
   end
 
-  describe MechPart do
+  describe Mech::Component do
     subject { @it }
     before do
-      @it = MechPart.new
+      @it = Mech::Component.new
     end
-    it { should be_kind_of MechPart }
+    it { should be_kind_of Mech::Component }
 
     describe "#initialize" do
       its(:durability) { should == 1 }
@@ -126,7 +126,6 @@ module MechRL
 
       its(:durability_percentage) { should == 0.3 }
     end
-
   end
 
   describe Rotatable do

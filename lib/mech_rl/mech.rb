@@ -8,41 +8,41 @@ module MechRL
       self.location = {x:0, y:0}
       self.velocity = 0
       self.target_velocity = 0
-      @parts = {}
+      @components = {}
 
-      #add_part :torso  do |torso|
-        #torso.extend Rotatable
-        #torso.rotary_speed = 45
-        #torso.max_rotation = 90
+      #add_component :torso  do |torso|
+      #torso.extend Rotatable
+      #torso.rotary_speed = 45
+      #torso.max_rotation = 90
       #end
-      #add_part :legs do |legs|
-        #legs.extend Rotatable
-        #legs.rotary_speed = 30
+      #add_component :legs do |legs|
+      #legs.extend Rotatable
+      #legs.rotary_speed = 30
       #end
 
       self.weight = 250.0
     end
 
-    def add_part slot, part = nil
-      part ||= MechPart.new
-      yield(part) if block_given?
-      @parts[slot] = part
+    def add_component slot, component = nil
+      component ||= Component.new
+      yield(component) if block_given?
+      @components[slot] = component
       self.class.send(:define_method, slot) do
-        @parts[slot]
+        @components[slot]
       end
     end
 
-    def remove_part slot
-      @parts.delete slot
+    def remove_component slot
+      @components.delete slot
       self.class.send(:remove_method, slot)
     end
 
     def has slot
-      @parts.has_key? slot
+      @components.has_key? slot
     end
 
     def slots
-      @parts.keys
+      @components.keys
     end
 
     def update delta
@@ -91,20 +91,20 @@ module MechRL
 
       base
     end
-  end
 
-  class MechPart
-    attr_accessor :durability, :max_durability, :heat
+    class Component
+      attr_accessor :durability, :max_durability, :heat
 
-    def initialize
-      self.durability = 1
-      self.max_durability = 1
-      self.heat = 0
-    end
+      def initialize
+        self.durability = 1
+        self.max_durability = 1
+        self.heat = 0
+      end
 
-    def durability_percentage
-      return 0 if max_durability == 0
-      durability / max_durability.to_f
+      def durability_percentage
+        return 0 if max_durability == 0
+        durability / max_durability.to_f
+      end
     end
   end
 
