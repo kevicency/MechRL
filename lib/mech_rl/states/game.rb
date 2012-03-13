@@ -5,26 +5,36 @@ module MechRL
       def initialize
         super
         @views << (View::Game.new self)
+        @views << (View::Debug.new self)
 
-        register Gosu::KbW, Gosu::KbUp do
-          if (player.target_velocity < 0.2)
-            player.target_velocity += 0.005
+        register Gosu::KbW, Gosu::KbUp do |delta|
+          if (player.target_velocity < 50)
+            player.target_velocity += 10*delta
           end
         end
 
-        register Gosu::KbA, Gosu::KbLeft do
-          player.turn_left
-        end
-
-        register Gosu::KbS, Gosu::KbDown do
+        register Gosu::KbS, Gosu::KbDown do |delta|
           if (player.target_velocity > 0)
-            player.target_velocity -= 0.005
+            player.target_velocity -= 10*delta
           end
         end
 
-        register Gosu::KbD, Gosu::KbRight do
-          player.turn_right
+        register Gosu::KbA do |delta|
+          player.turn :left, delta
         end
+
+        register Gosu::KbD do |delta|
+          player.turn :right, delta
+        end
+
+        register Gosu::KbQ do |delta|
+          player.look :left, delta
+        end
+
+        register Gosu::KbE do |delta|
+          player.look :right, delta
+        end
+
       end
     end
   end

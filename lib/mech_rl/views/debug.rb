@@ -2,18 +2,26 @@ module MechRL
   module View
     class Debug < Base
 
-      def initialize
+      def initialize state
+        super state
         @font = Gosu::Font.new(window, "Consolas", 18)
       end
 
       def draw
         status = [
-          "Location: [%.2f, %.2f]" % player.location[:x], player.location[:y],
-          "Velocity: %.2f/%.2f" % player.velocity, player.desired_velocity,
-          "Acceleration: %.2f" % player.acceleration
-          "Movement Direction: %.2f/%.2f" % player.movement_angle
+          "Location: [%.2f, %.2f]" % [player.location[:x], player.location[:y]],
+          "Velocity: %.2f/%.2f" % [player.velocity, player.target_velocity],
+          "Acceleration: %.2f" % player.acceleration,
+          "Movement Direction: %.2f" % player.movement_direction,
+          "Viewing Direction: %.2f" % player.viewing_direction
         ]
-       @font.draw("x: %.2f, y: %.2f, vel: %.2f, acc: %.2f, angle: %.2f" % [@x,@y,@vel,@acc,@angle], 3, 3, 1, 1, 1, 0xFF000000)
+        offset = 5
+        status.each_with_index do |s,i|
+          @font.draw(s,
+                    offset,
+                    offset + i*@font.height,
+                    1)
+        end
       end
 
       def player

@@ -4,6 +4,7 @@ module MechRL
       def initialize state
         super state
         @mech_img = Gosu::Image.new(window, "./assets/images/@.png", true)
+        @view_img = Gosu::Image.new(window, "./assets/images/@view.png", true)
       end
 
       def update delta
@@ -14,6 +15,11 @@ module MechRL
                            @state.player.location[:y],
                            1,
                            @state.player.movement_direction)
+
+        @view_img.draw_rot(@state.player.location[:x],
+                           @state.player.location[:y],
+                           1,
+                           @state.player.viewing_direction)
       end
 
       def player

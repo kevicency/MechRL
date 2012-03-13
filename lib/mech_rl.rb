@@ -9,6 +9,7 @@ require 'mech_rl/mech'
 require 'mech_rl/game_window'
 
 require 'mech_rl/views/base'
+require 'mech_rl/views/debug'
 require 'mech_rl/views/game'
 require 'mech_rl/views/test'
 

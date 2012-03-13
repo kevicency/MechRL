@@ -1,25 +1,50 @@
 module MechRL
   class Mech
     attr_accessor :location
-    attr_accessor :velocity, :target_velocity, :rotary_speed, :rotary_multiplier
-    attr_accessor :movement_direction
-    attr_accessor :slots, :weight
+    attr_accessor :velocity, :target_velocity
+    attr_accessor :weight
 
     def initialize
       self.location = {x:0, y:0}
       self.velocity = 0
       self.target_velocity = 0
-      self.slots = {
-        engine: { power: 1000.0 }
-      }
+      @parts = {}
+
+      #add_part :torso  do |torso|
+        #torso.extend Rotatable
+        #torso.rotary_speed = 45
+        #torso.max_rotation = 90
+      #end
+      #add_part :legs do |legs|
+        #legs.extend Rotatable
+        #legs.rotary_speed = 30
+      #end
+
       self.weight = 250.0
-      self.movement_direction = 0
-      self.rotary_multiplier = 0
-      self.rotary_speed = 45
+    end
+
+    def add_part slot, part = {}
+      yield(part) if block_given?
+      @parts[slot] = part
+      self.class.send(:define_method, slot) do
+        @parts[slot]
+      end
+    end
+
+    def remove_part slot
+      @parts.delete slot
+      self.class.send(:remove_method, slot)
+    end
+
+    def has slot
+      @parts.has_key? slot
+    end
+
+    def slots
+      @parts.keys
     end
 
     def update delta
-      self.movement_direction += (rotary_speed * rotary_multiplier * delta)
       distance = 0.5*acceleration*delta*delta + velocity*delta
 
       self.velocity += acceleration*delta
@@ -27,40 +52,92 @@ module MechRL
       self.location[:y] += Gosu::offset_y(movement_direction, distance)
     end
 
-    def turn_left
-      @rotary_multiplier = -1
+    def movement_direction
+      return 0 unless has :legs
+
+      legs.rotation
     end
 
-    def turn_right
-      @rotary_multiplier = 1
+    def viewing_direction
+      return 0 unless has :torso
+
+      movement_direction + torso.rotation
     end
 
-    def stop_turning
-      @rotary_multiplier = 0
+    def look direction, delta
+      torso.rotate direction, delta if has :torso
+    end
+
+    def turn direction, delta
+      legs.rotate direction, delta if has :legs
     end
 
     def acceleration
-      return 0 if target_velocity == velocity
+      return 0 unless has :torso
+      return 0 if (target_velocity - velocity).abs < 0.1
 
-      base = slots[:engine][:power] / weight
-      if (target_velocity < velocity)
-        base = -base
+      base = torso[:engine][:power] / weight
+
+      if (velocity > 0)
+        if (target_velocity < velocity)
+          base *= -3
+        end
+      else
+        if (target_velocity < velocity)
+          base *= -0.5
+        end
       end
 
       base
-      #if (velocity > 0)
-        #if (target_velocity > velocity)
-          #base
-        #else
-          #base * -3
-        #end
-      #else
-        #if (target_velocity > velocity)
-          #base
-        #else
-          #base * -0.5
-        #end
-      #end
+    end
+  end
+
+  class MechPart
+    attr_accessor :durability, :max_durability
+
+    def initialize
+      self.durability = 1
+      self.max_durability = 1
+    end
+
+    def durability_percentage
+      return 0 if max_durability == 0
+      durability / max_durability.to_f
+    end
+
+  end
+
+  module Rotatable
+    DIRECTION_MULTIPLIERS = {
+      :left => -1,
+      :right => 1,
+      :none => 0
+    }
+
+    attr_accessor :rotation, :rotary_speed, :max_rotation
+
+    def rotation
+      @rotation || 0
+    end
+
+    def rotate direction, delta
+      raise "Invalid direction: #{direction}" unless DIRECTION_MULTIPLIERS.keys.include? direction
+
+      multiplier = DIRECTION_MULTIPLIERS[direction || :none]
+      d_rot = (rotary_speed * multiplier * delta)
+      @rotation = rotation + d_rot
+
+      unless max_rotation.nil?
+        if (@rotation > 0 && @rotation > max_rotation)
+          @rotation = max_rotation
+        end
+        if (@rotation < 0 && @rotation < -max_rotation)
+          @rotation = -max_rotation
+        end
+      end
+
+      sign = @rotation > 0 ? 1 : -1
+      @rotation %= 360 * sign
     end
   end
 end

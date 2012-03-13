@@ -11,7 +11,7 @@ module MechRL
       def update delta
         @commands.each do |key, command|
           if window.button_down? key
-            command.call game
+            command.call delta
           end
         end
         @views.each do |view|
