@@ -8,6 +8,9 @@ require 'mech_rl/game'
 require 'mech_rl/mech'
 require 'mech_rl/game_window'
 
+require 'mech_rl/components/component'
+require 'mech_rl/components/rotatable'
+
 require 'mech_rl/views/base'
 require 'mech_rl/views/debug'
 require 'mech_rl/views/game'

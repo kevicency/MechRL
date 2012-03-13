@@ -91,54 +91,5 @@ module MechRL
 
       base
     end
-
-    class Component
-      attr_accessor :durability, :max_durability, :heat
-
-      def initialize
-        self.durability = 1
-        self.max_durability = 1
-        self.heat = 0
-      end
-
-      def durability_percentage
-        return 0 if max_durability == 0
-        durability / max_durability.to_f
-      end
-    end
-  end
-
-  module Rotatable
-    DIRECTION_MULTIPLIERS = {
-      :left => -1,
-      :right => 1,
-      :none => 0
-    }
-
-    attr_accessor :rotation, :rotary_speed, :max_rotation
-
-    def rotation
-      @rotation || 0
-    end
-
-    def rotate direction, delta
-      raise "Invalid direction: #{direction}" unless DIRECTION_MULTIPLIERS.keys.include? direction
-
-      multiplier = DIRECTION_MULTIPLIERS[direction || :none]
-      d_rot = (rotary_speed * multiplier * delta)
-      @rotation = rotation + d_rot
-
-      unless max_rotation.nil?
-        if (@rotation > 0 && @rotation > max_rotation)
-          @rotation = max_rotation
-        end
-        if (@rotation < 0 && @rotation < -max_rotation)
-          @rotation = -max_rotation
-        end
-      end
-
-      sign = @rotation > 0 ? 1 : -1
-      @rotation %= 360 * sign
-    end
   end
 end
