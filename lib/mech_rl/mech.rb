@@ -23,7 +23,8 @@ module MechRL
       self.weight = 250.0
     end
 
-    def add_part slot, part = {}
+    def add_part slot, part = nil
+      part ||= MechPart.new
       yield(part) if block_given?
       @parts[slot] = part
       self.class.send(:define_method, slot) do
@@ -93,18 +94,18 @@ module MechRL
   end
 
   class MechPart
-    attr_accessor :durability, :max_durability
+    attr_accessor :durability, :max_durability, :heat
 
     def initialize
       self.durability = 1
       self.max_durability = 1
+      self.heat = 0
     end
 
     def durability_percentage
       return 0 if max_durability == 0
       durability / max_durability.to_f
     end
-
   end
 
   module Rotatable

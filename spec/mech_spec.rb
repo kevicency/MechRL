@@ -18,7 +18,6 @@ module MechRL
     describe "#add_part" do
       before do
         @it.add_part :foo do |foo|
-          foo[:bar] = 1
           @foo = foo
         end
       end
@@ -34,6 +33,10 @@ module MechRL
       it "adds the part" do
         puts "slots: #{@it.slots}"
         @it.has(:foo).should be_true
+      end
+
+      it "creates a new MechPart when no specific part is given" do
+        @it.foo.should be_kind_of MechPart
       end
 
       context "followed by #remove_part" do
@@ -107,6 +110,12 @@ module MechRL
     describe "#initialize" do
       its(:durability) { should == 1 }
       its(:max_durability) { should == 1 }
+      its(:heat){ should == 0 }
+    private
+
+    def heat= value
+      @heat = value
+    end
     end
 
     describe "#durability_percentage" do
