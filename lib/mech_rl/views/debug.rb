@@ -11,9 +11,10 @@ module MechRL
         status = [
           "Location: [%.2f, %.2f]" % [player.location[:x], player.location[:y]],
           "Velocity: %.2f/%.2f" % [player.velocity, player.target_velocity],
-          "Acceleration: %.2f" % player.acceleration,
+          "Acceleration: %.2f" % player.torso.engine.acceleration,
+          "Heat: %.2f" % player.heat,
           "Movement Direction: %.2f" % player.movement_direction,
-          "Viewing Direction: %.2f" % player.viewing_direction
+          "Viewing Direction: %.2f" % player.facing_direction
         ]
         offset = 5
         status.each_with_index do |s,i|

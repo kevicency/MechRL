@@ -1,5 +1,11 @@
 module MechRL
   module State
+    class Mech < Base
+      def initialize
+        super
+        @views << (View::Mech.new self)
+      end
+    end
     class Game < Base
 
       def initialize
@@ -35,6 +41,12 @@ module MechRL
           player.look :right, delta
         end
 
+      end
+
+      def update delta
+        super delta
+        player.location[:x] %= Constants::Window::ScreenWidth
+        player.location[:y] %= Constants::Window::ScreenHeight
       end
     end
   end

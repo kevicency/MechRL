@@ -21,7 +21,7 @@ module MechRL
     def update
       if (@game.nil?)
         @game = Game.new
-        @game.transition_to State::Game.new
+        @game.transition_to State::Mech.new
       end
       @game.update update_interval/1000 unless game.nil?
     end

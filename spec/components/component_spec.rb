@@ -22,5 +22,11 @@ module MechRL
 
       its(:durability_percentage) { should == 0.3 }
     end
+
+    describe "#apply_coolant" do
+      before do
+        
+      end
+    end
   end
 end

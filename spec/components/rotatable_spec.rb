@@ -1,10 +1,10 @@
 require_relative '../spec_helper'
 
 module MechRL
-  describe Rotatable do
+  describe Mech::Rotatable do
     before do
       @it = Object.new
-      @it.extend Rotatable
+      @it.extend Mech::Rotatable
     end
 
     describe "#update_rotation" do

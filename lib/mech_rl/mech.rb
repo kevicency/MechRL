@@ -1,51 +1,61 @@
 module MechRL
   class Mech
+
+    COMPONENTS = [
+      :head,
+      :torso,
+      :shoulders,
+      :left_arm,
+      :right_arm,
+      :left_leg,
+      :right_leg
+    ]
+
     attr_accessor :location
     attr_accessor :velocity, :target_velocity
-    attr_accessor :weight
+
+    COMPONENTS.each do |component|
+      define_method component do
+        @components[component] || (raise "Component #{component} missing.")
+      end
+
+      define_method "#{component}=" do |value|
+        @components[component] = value
+      end
+    end
 
     def initialize
       self.location = {x:0, y:0}
       self.velocity = 0
       self.target_velocity = 0
       @components = {}
-
-      #add_component :torso  do |torso|
-      #torso.extend Rotatable
-      #torso.rotary_speed = 45
-      #torso.max_rotation = 90
-      #end
-      #add_component :legs do |legs|
-      #legs.extend Rotatable
-      #legs.rotary_speed = 30
-      #end
-
-      self.weight = 250.0
     end
 
-    def add_component slot, component = nil
-      component ||= Component.new
-      yield(component) if block_given?
-      @components[slot] = component
-      self.class.send(:define_method, slot) do
-        @components[slot]
-      end
+    def weight
+      @components.values
+      .map(&:weight)
+      .reduce(&:+) || 0
     end
 
-    def remove_component slot
-      @components.delete slot
-      self.class.send(:remove_method, slot)
+    def heat
+      @components.values
+      .map(&:heat)
+      .reduce(&:+) || 0
     end
 
-    def has slot
-      @components.has_key? slot
+    def max_heat
+      torso.max_heat
     end
 
-    def slots
-      @components.keys
+    def acceleration
+      torso.engine.acceleration
     end
 
     def update delta
+      self.velocity = velocity - (velocity*0.10*delta)
+      torso.engine.update delta
+      torso.cooling_unit.update delta
+
       distance = 0.5*acceleration*delta*delta + velocity*delta
 
       self.velocity += acceleration*delta
@@ -54,42 +64,43 @@ module MechRL
     end
 
     def movement_direction
-      return 0 unless has :legs
-
-      legs.rotation
+      left_leg.rotation
     end
 
-    def viewing_direction
-      return 0 unless has :torso
-
+    def facing_direction
       movement_direction + torso.rotation
     end
 
     def look direction, delta
-      torso.rotate direction, delta if has :torso
+      "looking"
+      torso.rotate direction, delta
     end
 
     def turn direction, delta
-      legs.rotate direction, delta if has :legs
+      legs.each do |leg|
+        leg.rotate direction, delta
+      end
     end
 
-    def acceleration
-      return 0 unless has :torso
-      return 0 if (target_velocity - velocity).abs < 0.1
+    def legs
+      [left_leg, right_leg]
+    end
 
-      base = torso[:engine][:power] / weight
+    def arms
+      [left_arm, right_arm]
+    end
 
-      if (velocity > 0)
-        if (target_velocity < velocity)
-          base *= -3
-        end
-      else
-        if (target_velocity < velocity)
-          base *= -0.5
-        end
+    def components
+      @components.values
+    end
+
+    private
+
+    def reduce_heat coolant
+      heat = self.heat
+      @components.values.each do |component|
+        next if component.heat = 0
       end
-
-      base
     end
   end
 end

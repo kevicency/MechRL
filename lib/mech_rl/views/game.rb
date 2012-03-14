@@ -7,9 +7,6 @@ module MechRL
         @view_img = Gosu::Image.new(window, "./assets/images/@view.png", true)
       end
 
-      def update delta
-      end
-
       def draw
         @mech_img.draw_rot(@state.player.location[:x],
                            @state.player.location[:y],
@@ -19,7 +16,7 @@ module MechRL
         @view_img.draw_rot(@state.player.location[:x],
                            @state.player.location[:y],
                            1,
-                           @state.player.viewing_direction)
+                           @state.player.facing_direction)
       end
 
       def player
