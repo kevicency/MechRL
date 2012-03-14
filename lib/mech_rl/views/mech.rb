@@ -4,27 +4,38 @@ module MechRL
 
       def initialize state
         super state
-        @font = Gosu::Font.new(window, "Impact", 16)
-        @mech_ascii = File.read("/home/kev/dev/7drl/data/mechs/timber_wolf.txt").split "\n"
+        @font = Resources.fonts[:ascii]
+        @mech_ascii = Resources.ascii_art[state.player.type]
+        @ascii_meta = Resources.ascii_meta[state.player.type]
         @char_width = (@font.text_width "w")-1
         @char_height = @font.height - 1
-        @mid = 19
+        @offset_x = 2*@char_width
+        @offset_y = 2*@char_height
+        @width = 2*@offset_x + @mech_ascii.map(&:length).max*@char_width
       end
 
       def draw
+        base_x = Constants::Window::ScreenWidth - @width + @offset_x
+        base_y = @offset_y
         @mech_ascii.each_with_index do |s,y|
           x = 0
           s.chars do |c|
             color = Gosu::Color::GRAY
+            left = base_x + x*@char_width
+            right = base_x + (x+1)*@char_width
+            top = base_y + y*@char_height
+            bottom = base_y + (y+1)*@char_height + 6
+
             window.draw_quad(
-            (x)*@char_width  , (y)*@char_height  , color,
-            (x+1)*@char_width, (y)*@char_height  , color,
-            (x)*@char_width  , (y+1)*@char_height+6, color,
-            (x+1)*@char_width, (y+1)*@char_height+6, color
+              left , top   , color,
+              right, top   , color,
+              left , bottom, color,
+              right, bottom, color
             ) if c != " "
+
             @font.draw(c,
-                       x*@char_width,
-                       y*@char_height,
+                       left,
+                       top,
                        1,
                        1,
                        1.5,
@@ -36,57 +47,13 @@ module MechRL
       end
 
       def get_color x,y
-        if is_shoulder? x,y
-          Gosu::Color::GREEN
-        elsif is_left_arm? x,y
-          Gosu::Color::AQUA
-        elsif is_right_arm? x,y
-          Gosu::Color::RED
-        elsif is_left_leg? x,y
-          Gosu::Color::BLUE
-        elsif is_right_leg? x,y
-          Gosu::Color::YELLOW
-        elsif is_head? x,y
-          Gosu::Color::CYAN
-        else
-          Gosu::Color::FUCHSIA
-        end
-
-          Gosu::Color::GREEN
-      end
-
-      def mirror x
-        x = @mid - (x % @mid)
-      end
-
-      def is_shoulder? x,y
-        x = mirror x if x > @mid
-        (y < 4) ||
-          (y < 7 && x < 14) ||
-          (y < 10 && ((11..13).include? x))
-      end
-
-      def is_left_arm? x,y
-        (((7..13).include? y) && x < 11) ||
-          (((14..17).include? y) && x < 10)
-      end
-
-      def is_right_arm? x,y
-        x > @mid ? (is_left_arm? (mirror x), y) : false
-      end
-
-      def is_left_leg? x,y
-        (((13..17).include? y) && ((6..15).include? x)) ||
-          (y > 17 && x < @mid)
-      end
-
-      def is_right_leg? x,y
-        x > @mid ? (is_left_leg? (mirror x),y) : false
-      end
-
-      def is_head? x,y
-        (((8..10).include? y) && ((17..21).include? x)) ||
-          (y == 1 && ((18..20).include? x))
+        component_name = MechRL::Mech::COMPONENTS
+          .select { |c| c != :torso }
+          .select { |c| @ascii_meta.send "is_#{c}?", x, y}
+          .first || :torso
+        component = state.player.send component_name
+        ratio = component.durability_percentage
+        Gosu::Color.from_hsv(120*ratio, 1, 1)
       end
     end
   end

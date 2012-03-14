@@ -25,6 +25,17 @@ module MechRL
       @player.right_leg = Mech::Leg.new
       @player.right_leg.rotary_speed = 60
 
+      @player.shoulders = Mech::Component.new
+      @player.head = Mech::Component.new
+      @player.right_arm = Mech::Component.new
+      @player.left_arm = Mech::Component.new
+
+      Mech::COMPONENTS.each do |c|
+        component = @player.send c
+        component.max_durability = 100
+        component.durability = rand(100)
+      end
+
       @states = []
     end
 

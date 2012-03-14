@@ -7,6 +7,7 @@ require 'mech_rl/constants'
 require 'mech_rl/game'
 require 'mech_rl/mech'
 require 'mech_rl/game_window'
+require 'mech_rl/resources'
 
 require 'mech_rl/components/component'
 require 'mech_rl/components/rotatable'

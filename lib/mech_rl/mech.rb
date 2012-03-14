@@ -11,6 +11,7 @@ module MechRL
       :right_leg
     ]
 
+    attr_accessor :type
     attr_accessor :location
     attr_accessor :velocity, :target_velocity
 
@@ -28,6 +29,7 @@ module MechRL
       self.location = {x:0, y:0}
       self.velocity = 0
       self.target_velocity = 0
+      @type = :timber_wolf
       @components = {}
     end
 

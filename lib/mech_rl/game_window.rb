@@ -16,13 +16,18 @@ module MechRL
 
       @views = []
       @bg_color = Gosu::Color.new 0xFFc0c0c0
+      @is_first_update = true
     end
 
     def update
-      if (@game.nil?)
+      if (@is_first_update)
+        Resources.load self
         @game = Game.new
         @game.transition_to State::Mech.new
+
+        @is_first_update = false
       end
+
       @game.update update_interval/1000 unless game.nil?
     end
 
