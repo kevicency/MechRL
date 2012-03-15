@@ -1,6 +1,9 @@
 module MechRL
   module Resources
 
+    class << (Fonts = Hash.new)
+
+    end
 
     class << self
       def ascii_art
@@ -42,7 +45,9 @@ module MechRL
         end
 
         fonts[:ascii] = Gosu::Font.new(window, "Impact", 14)
+        Fonts[:ascii] = Gosu::Font.new(window, "Impact", 14)
         fonts[:log] = Gosu::Font.new(window, "Consolas", 16)
+        Fonts[:log] = Gosu::Font.new(window, "Consolas", 16)
 
         nil
       end

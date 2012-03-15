@@ -1,5 +1,6 @@
 module MechRL
   class Mech
+    include Rotatable
 
     COMPONENTS = [
       :head,
@@ -29,7 +30,6 @@ module MechRL
       self.location = {x:0, y:0}
       self.velocity = 0
       self.target_velocity = 0
-      @type = :timber_wolf
       @components = {}
     end
 
@@ -54,34 +54,17 @@ module MechRL
     end
 
     def update delta
-      self.velocity = velocity - (velocity*0.10*delta)
-      torso.engine.update delta
-      torso.cooling_unit.update delta
+      self.velocity = velocity - (velocity*0.05*delta)
+
+      components.each do |component|
+        component.update delta
+      end
 
       distance = 0.5*acceleration*delta*delta + velocity*delta
 
       self.velocity += acceleration*delta
-      self.location[:x] += Gosu::offset_x(movement_direction, distance)
-      self.location[:y] += Gosu::offset_y(movement_direction, distance)
-    end
-
-    def movement_direction
-      left_leg.rotation
-    end
-
-    def facing_direction
-      movement_direction + torso.rotation
-    end
-
-    def look direction, delta
-      "looking"
-      torso.rotate direction, delta
-    end
-
-    def turn direction, delta
-      legs.each do |leg|
-        leg.rotate direction, delta
-      end
+      self.location[:x] += Gosu::offset_x(rotation, distance)
+      self.location[:y] += Gosu::offset_y(rotation, distance)
     end
 
     def legs
@@ -94,15 +77,6 @@ module MechRL
 
     def components
       @components.values
-    end
-
-    private
-
-    def reduce_heat coolant
-      heat = self.heat
-      @components.values.each do |component|
-        next if component.heat = 0
-      end
     end
   end
 end

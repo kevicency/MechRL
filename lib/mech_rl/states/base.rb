@@ -1,6 +1,8 @@
 module MechRL
   module State
     class Base
+      include Accessors
+
       attr_reader :views
 
       def initialize
@@ -31,22 +33,14 @@ module MechRL
         false
       end
 
-      def window
-        GameWindow.instance
-      end
-
-      def game
-        window.game
-      end
-
-      def player
-        game.player unless game.nil?
-      end
-
       private
 
-      def register *keys, &blk
+      def add_command *keys, &blk
         keys.each {|key| @commands[key] = blk }
+      end
+
+      def add_view view_class
+        @views << (view_class.new self)
       end
     end
   end

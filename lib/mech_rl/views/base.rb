@@ -1,6 +1,8 @@
 module MechRL
   module View
     class Base
+      include Accessors
+
       attr_reader :state
 
       def initialize state
@@ -9,10 +11,6 @@ module MechRL
 
       def update delta
 
-      end
-
-      def window
-        GameWindow.instance
       end
     end
   end

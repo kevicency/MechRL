@@ -1,5 +1,3 @@
-require_relative "rotatable"
-
 module MechRL
   class Mech
     class Component
@@ -13,6 +11,12 @@ module MechRL
         @addons = []
       end
 
+      def update delta
+        @addons.each do |addon|
+          addon.update delta
+        end
+      end
+
       def durability_percentage
         return 0 if max_durability == 0
         durability / max_durability.to_f
@@ -24,22 +28,6 @@ module MechRL
 
       def weight
         base_weight + (@addons.map(&:weight).reduce(&:+) || 0)
-      end
-
-      def apply_coolant coolant
-        return coolant if heat == 0
-
-        heat = self.heat
-        if (coolant > heat)
-          addons.each { |x| x.heat = 0 }
-          return coolant - heat
-        else
-          addons.each do |addon|
-            coolant_share = (addon.heat / heat.to_f)*coolant
-            addon.heat -= coolant_share
-          end
-          return 0
-        end
       end
 
       private
@@ -72,7 +60,6 @@ module MechRL
     #end
 
     class Leg < Component
-      include MechRL::Mech::Rotatable
 
     end
 

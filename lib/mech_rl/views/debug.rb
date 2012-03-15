@@ -4,17 +4,17 @@ module MechRL
 
       def initialize state
         super state
-        @font = Gosu::Font.new(window, "Consolas", 18)
+        @font = Resources::Fonts[:log]
       end
 
       def draw
         status = [
-          "Location: [%.2f, %.2f]" % [player.location[:x], player.location[:y]],
-          "Velocity: %.2f/%.2f" % [player.velocity, player.target_velocity],
-          "Acceleration: %.2f" % player.torso.engine.acceleration,
-          "Heat: %.2f" % player.heat,
-          "Movement Direction: %.2f" % player.movement_direction,
-          "Viewing Direction: %.2f" % player.facing_direction
+          "Location: [%.2f, %.2f]" % [mech.location[:x], mech.location[:y]],
+          "Velocity: %.2f/%.2f" % [mech.velocity, mech.target_velocity],
+          "Acceleration: %.2f" % mech.acceleration,
+          "Heat: %.2f" % mech.heat,
+          "Rotation: %.2f" % mech.rotation,
+          "Torso Rotation: %.2f" % mech.torso.rotation
         ]
         offset = 5
         status.each_with_index do |s,i|
@@ -23,10 +23,6 @@ module MechRL
                     offset + i*@font.height,
                     1)
         end
-      end
-
-      def player
-        window.game.player
       end
     end
   end

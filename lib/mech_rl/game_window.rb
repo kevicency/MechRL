@@ -23,7 +23,7 @@ module MechRL
       if (@is_first_update)
         Resources.load self
         @game = Game.new
-        @game.transition_to State::Mech.new
+        @game.transition_to State::Ingame.new
 
         @is_first_update = false
       end

@@ -1,14 +1,16 @@
 module MechRL
   module View
-    class Mech < Base
+    class Sidebar < Base
 
       def initialize state
         super state
         @font = Resources.fonts[:ascii]
-        @mech_ascii = Resources.ascii_art[state.player.type]
-        @ascii_meta = Resources.ascii_meta[state.player.type]
+        @mech_ascii = Resources.ascii_art[mech.type]
+        @ascii_meta = Resources.ascii_meta[mech.type]
+
         @char_width = (@font.text_width "w")-1
         @char_height = @font.height - 1
+
         @offset_x = 2*@char_width
         @offset_y = 2*@char_height
         @width = 2*@offset_x + @mech_ascii.map(&:length).max*@char_width
@@ -17,6 +19,15 @@ module MechRL
       def draw
         base_x = Constants::Window::ScreenWidth - @width + @offset_x
         base_y = @offset_y
+        bg = Gosu::Color::BLACK
+
+        window.draw_quad(
+          base_x - @offset_x             , 0                              , bg, 
+          Constants::Window::ScreenWidth, 0                              , bg, 
+          base_x - @offset_x             , Constants::Window::ScreenHeight, bg, 
+          Constants::Window::ScreenWidth, Constants::Window::ScreenHeight, bg
+        )
+
         @mech_ascii.each_with_index do |s,y|
           x = 0
           s.chars do |c|
@@ -48,10 +59,10 @@ module MechRL
 
       def get_color x,y
         component_name = MechRL::Mech::COMPONENTS
-          .select { |c| c != :torso }
-          .select { |c| @ascii_meta.send "is_#{c}?", x, y}
-          .first || :torso
-        component = state.player.send component_name
+        .select { |c| c != :torso }
+        .select { |c| @ascii_meta.send "is_#{c}?", x, y}
+        .first || :torso
+        component = mech.send component_name
         ratio = component.durability_percentage
         Gosu::Color.from_hsv(120*ratio, 1, 1)
       end
