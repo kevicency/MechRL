@@ -9,15 +9,15 @@ module MechRL
 
       def draw
         mech =  game.player.mech
-        @mech_img.draw_rot(mech.location[:x],
+        @mech_img.draw_rot mech.location[:x],
                            mech.location[:y],
                            1,
-                           mech.rotation)
+                           mech.rotation
 
-        @view_img.draw_rot(mech.location[:x],
+        @view_img.draw_rot mech.location[:x],
                            mech.location[:y],
                            1,
-                           mech.rotation + mech.torso.rotation)
+                           mech.rotation + mech.torso.rotation
       end
 
       def player

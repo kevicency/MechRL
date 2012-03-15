@@ -14,10 +14,6 @@ module MechRL
         @ascii_mets ||= {}
       end
 
-      def fonts
-        @fonts ||= {}
-      end
-
       def images
         @images ||= {}
       end
@@ -44,10 +40,10 @@ module MechRL
           images[name.to_sym] = image
         end
 
-        fonts[:ascii] = Gosu::Font.new(window, "Impact", 14)
         Fonts[:ascii] = Gosu::Font.new(window, "Impact", 14)
-        fonts[:log] = Gosu::Font.new(window, "Consolas", 16)
         Fonts[:log] = Gosu::Font.new(window, "Consolas", 16)
+        Fonts[:label_s] = Gosu::Font.new(window, "Consolas", 12)
+        Fonts[:label_m] = Gosu::Font.new(window, "Consolas", 16)
 
         nil
       end

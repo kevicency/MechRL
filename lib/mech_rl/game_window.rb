@@ -36,15 +36,20 @@ module MechRL
 
       @game.state.views.each &:draw
     end
+
+    def draw_rect x1, y1, x2, y2, color
+      draw_quad(
+        x1, y1, color,
+        x2, y1, color,
+        x1, y2, color,
+        x2, y2, color
+      )
+    end
+
     private
 
     def draw_background
-      draw_quad(
-      0                  , 0                   , @bg_color, 
-      Window::ScreenWidth, 0                   , @bg_color, 
-      0                  , Window::ScreenHeight, @bg_color, 
-      Window::ScreenWidth, Window::ScreenHeight, @bg_color
-      )
+      draw_rect(0, 0, Window::ScreenWidth, Window::ScreenHeight, @bg_color)
     end
   end
 end

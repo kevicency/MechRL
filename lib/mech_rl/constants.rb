@@ -12,7 +12,7 @@ module MechRL
 
     module ZOrder
       Background = 1
-      Text = 1
+      Text = 2
     end
 
   end
