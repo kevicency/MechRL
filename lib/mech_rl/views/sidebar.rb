@@ -15,11 +15,12 @@ module MechRL
         @char_width  = @ascii_font.text_width("w")-1
         @char_height = @ascii_font.height-1
 
-        @mech_bg     = Gosu::Color.new 0xFF151515
         @sidebar_bg  = Gosu::Color.new 0xFF303030
+        @overlay_bg  = Gosu::Color.new 0xFF151515
+        @selected_color = Gosu::Color.new 0xFF0088FF
 
         @margin_x    = @char_width*2
-        @margin_y    = @char_height*2
+        @margin_y    = @char_height
 
         @width       = @margin_x*2 + @ascii_art.map(&:length).max*@char_width
         @height      = Window::ScreenHeight
@@ -27,21 +28,24 @@ module MechRL
         @left        = Window::ScreenWidth - @width
         @right       = Window::ScreenWidth
 
-        @mech_height= (@ascii_art.length + 1.5)*@char_height
+        @mech_height= (@ascii_art.length + 0.5)*@char_height
       end
 
       def draw
         draw_bg
-        draw_torso_rotation
-        draw_mech
+
+        top = 1.5*@margin_y
+        top += draw_weapons top
+        top += draw_torso_rotation top
+
+        draw_mech top
       end
 
       def draw_bg
         window.draw_rect @left, 0, @right, @height, @sidebar_bg
       end
 
-      def draw_torso_rotation
-        top              = @margin_y
+      def draw_torso_rotation top
         left             = @left + @margin_x
         right            = @right - @margin_x
         half_length      = (right-left)/2
@@ -56,7 +60,7 @@ module MechRL
         #header
 
         # bar
-        window.draw_rect left, top, right, top+bar_height, @mech_bg
+        window.draw_rect left, top, right, top+bar_height, @overlay_bg
 
         # markers
         3.times do |i|
@@ -69,7 +73,7 @@ module MechRL
                            top - marker_offset_y,
                            marker_right,
                            bar_bottom + marker_offset_y,
-                           @mech_bg
+                           @overlay_bg
         end
 
         # captions
@@ -77,11 +81,8 @@ module MechRL
         [-mech.torso.max_rotation, 0, mech.torso.max_rotation].each_with_index do |rot, i|
           @small_font.draw_rel rot,
                                left + i*half_length,
-                               bar_bottom + marker_offset_y,
-                               ZOrder::Text,
-                               i*0.5,
-                               0,
-                               1, 1, Gosu::Color::BLACK
+                               bar_bottom + marker_offset_y + 3,
+                               ZOrder::Text, i*0.5, 0
         end
 
         # rotation indicator
@@ -92,9 +93,44 @@ module MechRL
                          indicator_left + indicator_width,
                          bar_bottom + indicator_offset,
                          Gosu::Color::RED
+
+        bar_bottom + indicator_offset
       end
 
-      def draw_mech
+      def draw_weapons top
+        left  = @left + @margin_x
+        right = @right - @margin_x
+        text_margin = 5
+
+        weapons = mech.components
+          .map(&:addons).flatten
+          .select { |a| a.is_weapon? }
+
+        @small_font.draw_rel "Weapons", left + (right-left)/2, top, ZOrder::Text, 0.5, 1
+        top += @small_font.height/2
+
+        weapons.each_with_index do |weapon, i|
+          color = weapon.is_selected? ? @selected_color : @overlay_bg
+          window.draw_rect left,
+                           top-4,
+                           right,
+                           top + @medium_font.height,
+                           color
+          @medium_font.draw "#{state.weapon_keys[i]}: #{weapon.name}",
+                            left + text_margin,
+                            top, ZOrder::Text
+          @medium_font.draw_rel weapon.ammo_count,
+                                right - text_margin,
+                                top,
+                                ZOrder::Text,
+                                1,
+                                0
+          top += 1.5*@medium_font.height
+        end
+        top
+      end
+
+      def draw_mech top
         base_top = @height - @mech_height
         @ascii_art.each_with_index do |s,y|
           x = 0
@@ -104,7 +140,7 @@ module MechRL
             top    = base_top + y*@char_height
             bottom = top + 1.5*@char_height
 
-            window.draw_rect left, top, right, bottom, @mech_bg unless c == " "
+            window.draw_rect left, top, right, bottom, @overlay_bg unless c == " "
 
             color = get_color x+1,y+1
             @ascii_font.draw(c, left, top, 1, 1, 1.5, color)

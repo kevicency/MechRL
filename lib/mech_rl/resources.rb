@@ -43,7 +43,7 @@ module MechRL
         Fonts[:ascii] = Gosu::Font.new(window, "Impact", 14)
         Fonts[:log] = Gosu::Font.new(window, "Consolas", 16)
         Fonts[:label_s] = Gosu::Font.new(window, "Consolas", 12)
-        Fonts[:label_m] = Gosu::Font.new(window, "Consolas", 16)
+        Fonts[:label_m] = Gosu::Font.new(window, "Consolas", 15)
 
         nil
       end

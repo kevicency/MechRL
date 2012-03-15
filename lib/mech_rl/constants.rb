@@ -2,8 +2,8 @@ module MechRL
   module Constants
 
     module Window
-      ScreenWidth = 800
-      ScreenHeight = 600
+      ScreenWidth = 1024
+      ScreenHeight = 768
       Fullscreen = false
       ScreenCaption = "MechRL"
       DefaultFont = "Arial"

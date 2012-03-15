@@ -14,7 +14,8 @@ module MechRL
           "Acceleration: %.2f" % mech.acceleration,
           "Heat: %.2f" % mech.heat,
           "Rotation: %.2f" % mech.rotation,
-          "Torso Rotation: %.2f" % mech.torso.rotation
+          "Torso Rotation: %.2f" % mech.torso.rotation,
+          "Friction: %.2f" % mech.friction
         ]
         offset = 5
         status.each_with_index do |s,i|

@@ -1,19 +1,18 @@
 require 'spec_helper'
 
 module MechRL
-  describe CoolingUnit do
+  describe Mech::CoolingUnit do
     before do
       @addons = [
-        double(AddOn, :heat => 30).as_null_object,
-        double(AddOn, :heat => 70).as_null_object,
-        double(AddOn, :heat => 0).as_null_object
+        double(Mech::AddOn, :heat => 30).as_null_object,
+        double(Mech::AddOn, :heat => 70).as_null_object,
+        double(Mech::AddOn, :heat => 0).as_null_object
       ]
       @mech = Mech.new
       @mech.stub(:components => [stub(:addons => @addons)])
       @mech.stub(:heat => 100)
-      @it = CoolingUnit.new
+      @it = Mech::CoolingUnit.new @mech
       @it.cooling_rate = 5
-      @it.attach_to @mech
     end
 
     [0,1,2].each do |i|

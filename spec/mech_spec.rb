@@ -5,7 +5,8 @@ module MechRL
     before { @it = Mech.new }
     subject { @it }
 
-    it { should be_kind_of Mech }
+    it { should be_instance_of Mech }
+    it { should be_kind_of Rotatable }
 
     it "has a getter for each component" do
       Mech::COMPONENTS.each do |c|
@@ -17,6 +18,12 @@ module MechRL
       Mech::COMPONENTS.each do |c|
         @it.should respond_to "#{c}=".to_s
       end
+    end
+
+    it "raises an error when a component is missing" do
+      lambda {
+        @it.torso
+      }.should raise_error
     end
 
     describe "#initialize" do
@@ -61,104 +68,59 @@ module MechRL
       end
     end
 
-    describe "#movement_direction" do
-      subject { @it.movement_direction }
-      context "when having no legs" do
-        it { should == 0 }
-      end
-
-
-      [:left_leg, :right_leg].each do |leg|
-        context "when having #{leg}" do
-          before do
-            @it.send("#{leg}=", double(Mech::Component, :rotation => 3))
-          end
-          it {should == 3}
-        end
-      end
-    end
-
-    describe "#facing_direction" do
-      subject { @it.facing_direction }
-      context "when having no torso" do
-        it { should == 0 }
-      end
-      context "when having a torso" do
-        before { @it.torso = double(Mech::Component, :rotation => 3) }
-        it { should == 3}
-      end
-    end
-
     describe "#update" do
-      let(:test_angle) { 0 }
+      let(:rotation) { 0 }
       before do
         @it.stub(:acceleration => 0)
-        @it.stub(:movement_direction => 0)
-        @it.stub(:cooling => stub(:rate => 0))
+        @it.stub(:rotation => rotation)
+
+        Mech::COMPONENTS.each do |c|
+          component = double(Mech::Component)
+          component.as_null_object
+          @it.send "#{c}=".to_sym, component
+        end
+      end
+
+      it "updates each component" do
+        @it.components.each do |c|
+          c.should_receive(:update).with(1)
+        end
+        @it.update 1
       end
 
       context "when the mech moves" do
         subject { @it.location }
         before do
           @it.location = {x:5,y:5}
-          @it.velocity = 1
+          @it.velocity = 2
           @it.target_velocity = 10
           @it.stub(:acceleration => 3)
-          @it.stub(:movement_direction => test_angle)
+          @it.stub(:friction => 0.25)
           @it.update 2
         end
 
         specify { @it.velocity.should == 7 }
 
         context "horizontally" do
-          let(:test_angle) { 90 }
+          let(:rotation) { 90 }
 
           its([:x]) { should be_within(0.01).of 13 }
           its([:y]) { should be_within(0.01).of 5 }
         end
 
         context "vertically" do
-          let(:test_angle) { 180 }
+          let(:rotation) { 180 }
 
           its([:x]) { should be_within(0.01).of 5 }
           its([:y]) { should be_within(0.01).of 13 }
         end
 
         context "diagonally" do
-          let(:test_angle) { 135 }
+          let(:rotation) { 135 }
 
           its([:x]) { should be_within(0.01).of @it.location[:y] }
         end
       end
-
-      #context "when the mech has multiple heated addons" do
-        #before do
-          #@it.stub(:cooling => stub(:rate => 8))
-          #@it.right_arm = Mech::Component.new
-          #@it.right_arm
-          #@it.left_arm = Mech::Component.new
-          #@it.update 2
-        #end
-
-        #context "where each component has more heat than cooling" do
-          #let(:heats) { [5,5,10] }
-          #it "it distributes the cooling among the components based on the relative components heat" do
-            #@it.right_arm.heat.should == 1
-            #@it.left_arm.heat.should == 1
-          #end
-        #end
-
-        #context "where one component get fully cooled" do
-          #let(:right_heat) { 8 }
-          #let(:left_heat) { 2 }
-          #let(:torso_heat) { 12 }
-          #it "the other component receives the overflow cooling" do
-            #@it.right_arm.heat.should == 6
-            #@it.left_arm.heat.should == 0
-            #@it.torso.heat.should == 2
-          #end
-        #end
-      #end
     end
   end
 end

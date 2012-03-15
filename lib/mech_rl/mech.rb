@@ -35,14 +35,14 @@ module MechRL
 
     def weight
       @components.values
-      .map(&:weight)
-      .reduce(&:+) || 0
+        .map(&:weight)
+        .reduce(&:+) || 0
     end
 
     def heat
       @components.values
-      .map(&:heat)
-      .reduce(&:+) || 0
+        .map(&:heat)
+        .reduce(&:+) || 0
     end
 
     def max_heat
@@ -53,8 +53,12 @@ module MechRL
       torso.engine.acceleration
     end
 
+    def friction
+      0.025 + (0.0005*velocity)
+    end
+
     def update delta
-      self.velocity = velocity - (velocity*0.05*delta)
+      self.velocity *= (1-friction*delta)
 
       components.each do |component|
         component.update delta

@@ -23,7 +23,7 @@ module MechRL
       mech.torso.base_weight = 100
       mech.torso.addons << (Mech::Engine.new mech)
       mech.torso.engine.weight = 250
-      mech.torso.engine.power = 3000
+      mech.torso.engine.power = 4000
       mech.torso.engine.heat_generation = 5
 
       mech.torso.addons << (Mech::CoolingUnit.new mech)
@@ -35,7 +35,24 @@ module MechRL
       mech.shoulders = Mech::Component.new
       mech.head = Mech::Component.new
       mech.right_arm = Mech::Component.new
+      mech.right_arm.addons << begin
+        weapon = Mech::Weapon.new mech
+        weapon.name = "SRM OVER 9000"
+        weapon.ammo_count = 100
+        weapon.cooldown = 0
+        weapon.base_weight = 10
+        weapon.ammo_weight = 0.1
+        weapon
+      end
       mech.left_arm = Mech::Component.new
+      mech.left_arm.addons << begin
+        weapon = Mech::Weapon.new mech
+        weapon.name = "Pew Pew Lazer"
+        weapon.ammo_count = Float::INFINITY
+        weapon.cooldown = 5
+        weapon.base_weight = 15
+        weapon
+      end
 
       Mech::COMPONENTS.each do |c|
         component = mech.send c

@@ -3,7 +3,7 @@ module MechRL
     class CoolingUnit < AddOn
       attr_accessor :cooling_rate
 
-      def initialize mech
+      def initialize mech = nil
         super mech
       end
 
