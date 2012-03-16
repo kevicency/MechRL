@@ -24,21 +24,16 @@ module MechRL
     end
 
     class Weapon < AddOn
-      attr_accessor :base_weight, :ammo_weight, :ammo_count, :cooldown, :cooldown_left
+      attr_accessor :base_weight
 
       def initialize mech = nil
         super mech
 
-        @cooldown = 0
-        @cooldown_left = 0
-        @ammo_count = 0
-        @ammo_per_shot = 1
-        @is_selected = false
+        self.is_selected = false
       end
 
       def weight
-        base_weight +
-          (@ammo_count == Float::INFINITY ? 0 : ammo_weight*ammo_count)
+        self.base_weight
       end
 
       def weight= value
@@ -47,6 +42,10 @@ module MechRL
 
       def is_weapon?
         true
+      end
+
+      def has_ammo?
+        false
       end
 
       def is_selected?
@@ -65,25 +64,87 @@ module MechRL
         @cooldown_left > 0
       end
 
-      def has_cooldown?
-        @cooldown > 0
-      end
-
-      def cooldown_left= value
-        @cooldown_left = [value, 0].max
-      end
-
-      def shoot target
-        unless is_on_cooldown? || @ammo_count == 0
-          shots = [@ammo_per_shot, @ammo_count].min
-          @ammo_count -= shots
-          @cooldown_left = @cooldown
-        end
+      def shoot target, delta = 0
       end
 
       def update delta
-        self.cooldown_left -= delta if is_on_cooldown?
       end
+    end
+
+    class Laser < Weapon
+      attr_accessor :intensity, :heat_generation
+
+      def initialize mech = nil
+        super mech
+
+        @intensity = 0
+        @heat_generation = 0
+      end
+
+      def shoot target, delta
+        shoot_intensity = intensity*delta
+        self.heat += heat_generation * delta
+      end
+    end
+
+    class WeaponWithAmmo < Weapon
+      attr_accessor :ammo_count, :ammo_weight, :ammo_burst, :ammo_heat, :ammo_damage
+      attr_accessor :reload_time
+      attr_reader   :reloading_timer
+
+      def initialize mech = nil
+        super mech
+        @ammo_count     = 0
+        @ammo_weight    = 0
+        @ammo_burst     = 1
+        @ammo_heat      = 0
+        @ammo_damage    = 0
+        @reload_time    = 0
+        @reloading_timer= 0
+      end
+
+      def weight
+        total_ammo_weight = ammo_weight*ammo_count
+        super + total_ammo_weight
+      end
+
+      def has_ammo?
+        true
+      end
+
+      def is_reloading?
+        reloading_timer > 0
+      end
+
+      def update delta
+        @reloading_timer -= delta if is_reloading?
+      end
+
+      def shoot target, delta = nil
+        super target, delta
+
+        unless is_reloading? || ammo_count == 0
+            shots = [ammo_burst, ammo_count].min
+            self.ammo_count -= shots
+            self.heat += shots*ammo_heat
+            self.reloading_timer = reload_time
+        end
+      end
+
+      private
+
+      def reloading_timer= value
+        @reloading_timer = [value, 0].max
+      end
+
+    end
+
+    class MissileLauncher < WeaponWithAmmo
+
+    end
+
+    class Gun < WeaponWithAmmo
+
     end
   end
 end

@@ -36,21 +36,39 @@ module MechRL
       mech.head = Mech::Component.new
       mech.right_arm = Mech::Component.new
       mech.right_arm.addons << begin
-        weapon = Mech::Weapon.new mech
-        weapon.name = "SRM OVER 9000"
+        weapon = Mech::MissileLauncher.new mech
+        weapon.base_weight = 25
+        weapon.name = "SRM 10"
         weapon.ammo_count = 100
-        weapon.cooldown = 0
-        weapon.base_weight = 10
-        weapon.ammo_weight = 0.1
+        weapon.ammo_weight = 0.5
+        weapon.ammo_burst = 10
+        weapon.ammo_heat = 1.5
+        weapon.ammo_damage = 15
+        weapon.reload_time = 10
+
         weapon
       end
       mech.left_arm = Mech::Component.new
       mech.left_arm.addons << begin
-        weapon = Mech::Weapon.new mech
-        weapon.name = "Pew Pew Lazer"
-        weapon.ammo_count = Float::INFINITY
-        weapon.cooldown = 5
-        weapon.base_weight = 15
+        weapon = Mech::Gun.new mech
+        weapon.base_weight = 10
+        weapon.name = "Dual Gun"
+        weapon.ammo_count = 1000
+        weapon.ammo_weight = 0.01
+        weapon.ammo_burst = 2
+        weapon.ammo_heat = 0.01
+        weapon.ammo_damage = 1.5
+        weapon.reload_time = 0.2
+
+        weapon
+      end
+      mech.left_arm.addons << begin
+        weapon = Mech::Laser.new mech
+        weapon.name = "Pew Pew Laser"
+        weapon.base_weight = 5
+        weapon.heat_generation = 10
+        weapon.intensity = 15
+
         weapon
       end
 

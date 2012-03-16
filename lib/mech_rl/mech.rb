@@ -31,6 +31,8 @@ module MechRL
       self.velocity = 0
       @target_velocity = 0
       @components = {}
+      @friction_base = 0.025
+      @friction_factor = 0.0005
     end
 
     def weight
@@ -46,7 +48,7 @@ module MechRL
     end
 
     def max_heat
-      torso.max_heat
+      100
     end
 
     def acceleration
@@ -54,11 +56,11 @@ module MechRL
     end
 
     def friction
-      0.005 + (0.0005*velocity)
+      @friction_base + (@friction_factor*velocity)
     end
 
     def max_velocity
-      (Math.sqrt(torso.engine.max_acceleration/0.0005)-0.005/0.0005/2)*0.95
+      max = Math.sqrt(torso.engine.max_acceleration/@friction_factor)-@friction_base/@friction_factor/2
     end
 
     def target_velocity= value
@@ -66,7 +68,6 @@ module MechRL
     end
 
     def update delta
-
       components.each do |component|
         component.update delta
       end
