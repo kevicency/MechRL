@@ -32,6 +32,7 @@ module MechRL
         @cooldown = 0
         @cooldown_left = 0
         @ammo_count = 0
+        @ammo_per_shot = 1
         @is_selected = false
       end
 
@@ -70,6 +71,14 @@ module MechRL
 
       def cooldown_left= value
         @cooldown_left = [value, 0].max
+      end
+
+      def shoot target
+        unless is_on_cooldown? || @ammo_count == 0
+          shots = [@ammo_per_shot, @ammo_count].min
+          @ammo_count -= shots
+          @cooldown_left = @cooldown
+        end
       end
 
       def update delta

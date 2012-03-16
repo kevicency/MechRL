@@ -23,7 +23,7 @@ module MechRL
       mech.torso.base_weight = 100
       mech.torso.addons << (Mech::Engine.new mech)
       mech.torso.engine.weight = 250
-      mech.torso.engine.power = 4000
+      mech.torso.engine.power = 2000
       mech.torso.engine.heat_generation = 5
 
       mech.torso.addons << (Mech::CoolingUnit.new mech)

@@ -34,20 +34,31 @@ module MechRL
           mech.torso.rotate :right, delta
         end
 
+        add_command Gosu::KbF do
+          mech.weapons
+            .select { |weapon| weapon.is_selected? }
+            .each { |weapon| weapon.shoot nil }
+        end
+
         @weapon_keys = [:Z,:X,:C,:V,:B,:N,:M]
 
         @weapons = {}
-        mech.components.map(&:addons).flatten
-          .select { |a| a.is_weapon? }
-          .each_with_index do |w,i|
+        mech.weapons.each_with_index do |w,i|
             key = @weapon_keys[i]
             @weapons[key] = w
-          end
+        end
 
         @weapon_keys.each do |c|
           gosu_key = Gosu.const_get "Kb#{c}"
           add_command gosu_key do
             toggle_weapon c
+          end
+        end
+
+        (0..9).each do |i|
+          gosu_key = Gosu.const_get "Kb#{i}"
+          add_command gosu_key do
+            mech.target_velocity = (i.to_f/10)*mech.max_velocity
           end
         end
       end

@@ -21,13 +21,10 @@ module MechRL
             @acceleration *= (@mech.velocity > 0 ? -2 : -0.5)
             self.heat += 0.1 * heat_generation * delta
           else
-            @acceleration = [@acceleration, dv/delta].min
             self.heat += @acceleration/max_acceleration * heat_generation * delta
           end
         end
       end
-
-      private
 
       def max_acceleration
         power / @mech.weight

@@ -29,7 +29,7 @@ module MechRL
     def initialize
       self.location = {x:0, y:0}
       self.velocity = 0
-      self.target_velocity = 0
+      @target_velocity = 0
       @components = {}
     end
 
@@ -54,11 +54,18 @@ module MechRL
     end
 
     def friction
-      0.025 + (0.0005*velocity)
+      0.005 + (0.0005*velocity)
+    end
+
+    def max_velocity
+      (Math.sqrt(torso.engine.max_acceleration/0.0005)-0.005/0.0005/2)*0.95
+    end
+
+    def target_velocity= value
+      @target_velocity = [value, max_velocity].min
     end
 
     def update delta
-      self.velocity *= (1-friction*delta)
 
       components.each do |component|
         component.update delta
@@ -66,7 +73,7 @@ module MechRL
 
       distance = 0.5*acceleration*delta*delta + velocity*delta
 
-      self.velocity += acceleration*delta
+      self.velocity = (velocity + acceleration*delta)*(1-friction*delta)
       self.location[:x] += Gosu::offset_x(rotation, distance)
       self.location[:y] += Gosu::offset_y(rotation, distance)
     end
@@ -77,6 +84,12 @@ module MechRL
 
     def arms
       [left_arm, right_arm]
+    end
+
+    def weapons
+      self.components
+        .map(&:addons).flatten
+        .select { |a| a.is_weapon? }
     end
 
     def components

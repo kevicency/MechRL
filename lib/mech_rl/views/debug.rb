@@ -10,7 +10,8 @@ module MechRL
       def draw
         status = [
           "Location: [%.2f, %.2f]" % [mech.location[:x], mech.location[:y]],
-          "Velocity: %.2f/%.2f" % [mech.velocity, mech.target_velocity],
+          "Velocity: %.2f/%.2f" % [mech.velocity, mech.max_velocity],
+          "Target Velocity: %.2f" % mech.target_velocity,
           "Acceleration: %.2f" % mech.acceleration,
           "Heat: %.2f" % mech.heat,
           "Rotation: %.2f" % mech.rotation,
