@@ -14,7 +14,7 @@ module MechRL
         coolant = cooling_rate * delta
         heat = @mech.heat
         @mech.components.each do |c|
-          c.addons.each do |a|
+          c.addons.reject(&:nil?).each do |a|
             coolant_share = (a.heat / heat.to_f)*coolant
             a.heat = [a.heat-coolant_share, 0].max
           end

@@ -11,31 +11,31 @@ module MechRL
     private
 
     def init_mech
-      self.mech = Mech.new
-      mech.type = :timber_wolf
+      self.mech = Mech.new :timber_wolf
       mech.rotary_speed = 60
       mech.location[:x] = Constants::Window::ScreenWidth/2
       mech.location[:y] = Constants::Window::ScreenHeight/2
 
-      mech.torso = Mech::Torso.new
       mech.torso.rotary_speed = 45
       mech.torso.max_rotation = 90
-      mech.torso.base_weight = 100
-      mech.torso.addons << (Mech::Engine.new mech)
-      mech.torso.engine.weight = 250
-      mech.torso.engine.power = 2000
-      mech.torso.engine.heat_generation = 5
+      mech.torso.addon_slots[0][:addon] = begin
+        engine = Mech::Engine.new mech
+        engine.name = "Default Engine"
+        engine.weight = 250
+        engine.power = 5000
+        engine.heat_generation = 5
+        engine
+      end
 
-      mech.torso.addons << (Mech::CoolingUnit.new mech)
-      mech.torso.cooling_unit.weight = 50
-      mech.torso.cooling_unit.cooling_rate = 4
+      mech.torso.addon_slots[1][:addon] = begin
+        cu = (Mech::CoolingUnit.new mech)
+        cu.name = "Cooler Master 2000"
+        cu.weight = 15
+        cu.cooling_rate = 4
+        cu
+      end
 
-      mech.left_leg = Mech::Leg.new
-      mech.right_leg = Mech::Leg.new
-      mech.shoulders = Mech::Component.new
-      mech.head = Mech::Component.new
-      mech.right_arm = Mech::Component.new
-      mech.right_arm.addons << begin
+      mech.shoulders.addon_slots[0][:addon] = begin
         weapon = Mech::MissileLauncher.new mech
         weapon.base_weight = 25
         weapon.name = "SRM 10"
@@ -48,8 +48,7 @@ module MechRL
 
         weapon
       end
-      mech.left_arm = Mech::Component.new
-      mech.left_arm.addons << begin
+      mech.left_arm.addon_slots[0][:addon] = begin
         weapon = Mech::Gun.new mech
         weapon.base_weight = 10
         weapon.name = "Dual Gun"
@@ -62,7 +61,7 @@ module MechRL
 
         weapon
       end
-      mech.left_arm.addons << begin
+      mech.left_arm.addon_slots[1][:addon] = begin
         weapon = Mech::Laser.new mech
         weapon.name = "Pew Pew Laser"
         weapon.base_weight = 5
@@ -74,8 +73,7 @@ module MechRL
 
       Mech::COMPONENTS.each do |c|
         component = mech.send c
-        component.max_durability = 100
-        component.durability = rand(100)
+        component.damage = rand(component.armor)
       end
     end
   end

@@ -1,7 +1,6 @@
 module MechRL
   module View
     class Sidebar < Base
-      include Constants
       attr_reader :width, :height
 
       def initialize state
@@ -9,8 +8,8 @@ module MechRL
         @medium_font = Resources::Fonts[:label_m]
         @small_font  = Resources::Fonts[:label_s]
         @ascii_font  = Resources::Fonts[:ascii]
-        @ascii_art   = Resources.ascii_art[mech.type]
-        @ascii_meta  = Resources.ascii_meta[mech.type]
+        @mech_data  = Mech::Data[mech.type]
+        @ascii_art   = @mech_data.ascii_art
 
         @char_width  = @ascii_font.text_width("w")-1
         @char_height = @ascii_font.height-1
@@ -210,10 +209,10 @@ module MechRL
       def get_color x,y
         component_name = MechRL::Mech::COMPONENTS
           .select { |c| c != :torso }
-          .select { |c| @ascii_meta.send "is_#{c}?", x, y}
+          .select { |c| @mech_data.send "is_#{c}?", x, y}
           .first || :torso
         component = mech.send component_name
-        ratio = component.durability_percentage
+        ratio = (1 - component.damage_percentage)
         if ratio > 0.2
           Gosu::Color.from_hsv(120*ratio, 1, 1)
         elsif ratio > 0

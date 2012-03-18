@@ -15,7 +15,7 @@ module MechRL
       self.caption = Window::ScreenCaption
 
       @views = []
-      @bg_color = Gosu::Color.new 0xFFc0c0c0
+      @bg_color = Gosu::Color.new 0xFF333333
       @is_first_update = true
     end
 
@@ -23,7 +23,7 @@ module MechRL
       if (@is_first_update)
         Resources.load self
         @game = Game.new
-        @game.transition_to State::Ingame.new
+        @game.transition_to State::StartMenu.new
 
         @is_first_update = false
       end

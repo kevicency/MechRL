@@ -4,6 +4,7 @@ module MechRL
     class Test < Base
 
       def initialize
+        super state
         @font = Gosu::Font.new(window, "Consolas", 32)
       end
 

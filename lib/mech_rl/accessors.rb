@@ -12,6 +12,10 @@ module MechRL
         game.player unless game.nil?
       end
 
+      def inventory
+        game.inventory unless game.nil?
+      end
+
       def mech
         player.mech unless player.nil?
       end

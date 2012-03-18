@@ -6,11 +6,13 @@ module MechRL
       include Accessors
 
       attr_reader :views
+      @@down_keys = Set.new
 
       def initialize
         @commands = {}
-        @views = []
-        @down_keys = Set.new
+        @views = Set.new
+        default_view = self.class.name.split("::").last
+        add_view (MechRL::View.const_get default_view) if MechRL::View.const_defined? default_view
       end
 
       def update delta
@@ -19,11 +21,11 @@ module MechRL
             if (command.is_repeatable?)
               command.execute delta
             else
-              command.execute unless @down_keys.include? key
+              command.execute unless @@down_keys.include? key
             end
-            @down_keys << key
+            @@down_keys << key
           else
-            @down_keys.delete key
+            @@down_keys.delete key
           end
         end
         @views.each do |view|

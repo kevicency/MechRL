@@ -15,5 +15,6 @@ module MechRL
       Text = 2
     end
 
+    Alphabet = ("a".."z").to_a
   end
 end

@@ -1,40 +1,48 @@
 module MechRL
   class Mech
     class Component
-      attr_reader :addons
-      attr_accessor :durability, :max_durability, :base_weight
+      attr_reader :addon_slots
+      attr_accessor :armor, :max_armor, :base_weight, :damage, :armor_weight
 
       def initialize
-        self.durability = 1
-        self.max_durability = 1
+        self.armor = 1
+        self.max_armor = 1
+        self.armor_weight = 0
+        self.damage = 0
         self.base_weight = 0
-        @addons = []
+        @addon_slots = []
       end
 
       def update delta
-        @addons.each do |addon|
-          addon.update delta
+        self.addons.each do |addon|
+          addon.update delta unless addon.nil?
         end
       end
 
-      def durability_percentage
-        return 0 if max_durability == 0
-        durability / max_durability.to_f
+      def damage_percentage
+        return 0 if armor == 0
+        damage / armor.to_f
       end
 
       def heat
-        addons.map(&:heat).reduce(&:+) || 0
+        addons.reject(&:nil?).map(&:heat).reduce(&:+) || 0
       end
 
       def weight
-        base_weight + (@addons.map(&:weight).reduce(&:+) || 0)
+        base_weight + (armor*armor_weight) + (addons.reject(&:nil?).map(&:weight).reduce(&:+) || 0)
+      end
+
+      def addons
+        @addon_slots.map do |slot|
+          slot[:addon]
+        end
       end
 
       private
 
       def find_addon key
         if (key.kind_of? Module)
-          @addons.select {|a| a.kind_of? key }.first
+          addons.select {|a| a.kind_of? key }.first
         end || (raise "Addon #{key} not found.")
       end
     end
@@ -60,7 +68,7 @@ module MechRL
     #end
 
     class Leg < Component
-
+      attr_accessor :payload
     end
 
     #class Rear < Component

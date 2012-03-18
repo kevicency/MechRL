@@ -1,10 +1,13 @@
 module MechRL
   module View
     class Debug < Base
+      attr_accessor :left, :top
 
       def initialize state
         super state
         @font = Resources::Fonts[:log]
+        @left = 0
+        @top = 0
       end
 
       def draw
@@ -18,12 +21,11 @@ module MechRL
           "Torso Rotation: %.2f" % mech.torso.rotation,
           "Friction: %.2f" % mech.friction
         ]
-        offset = 5
         status.each_with_index do |s,i|
-          @font.draw(s,
-                    offset,
-                    offset + i*@font.height,
-                    1)
+          @font.draw s,
+                     left,
+                     top + i*@font.height,
+                     1
         end
       end
     end

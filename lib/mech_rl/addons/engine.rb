@@ -4,7 +4,7 @@ module MechRL
       attr_accessor :power, :heat_generation
       attr_reader :acceleration
 
-      def initialize mech
+      def initialize mech = nil
         super mech
         @acceleration = 0
       end
@@ -28,6 +28,7 @@ module MechRL
       end
 
       def max_acceleration
+        return 0 if @mech.nil?
         power / @mech.weight
       end
     end

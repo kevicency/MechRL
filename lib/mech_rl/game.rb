@@ -1,9 +1,10 @@
 module MechRL
   class Game
-    attr_reader :player
+    attr_reader :player, :inventory
 
     def initialize
       @player = Player.new
+      @inventory = Inventory.new
       @states = []
     end
 
